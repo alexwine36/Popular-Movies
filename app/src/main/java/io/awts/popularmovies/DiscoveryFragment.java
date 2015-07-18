@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 
 /**
@@ -27,7 +28,9 @@ import java.net.URL;
  */
 public class DiscoveryFragment extends Fragment {
 
-    private ImageAdapter mMovieAdapter;
+    public ImageAdapter mMovieAdapter;
+
+    private ArrayList<MovieData> movieList;
 
     public DiscoveryFragment() {
     }
@@ -51,6 +54,12 @@ public class DiscoveryFragment extends Fragment {
                 Log.d("Button Clicked", "Button was clicked");
             }
         });
+
+        movieList = new ArrayList<MovieData>();
+
+        mMovieAdapter = new ImageAdapter(getActivity(), movieList);
+
+
 //        mMovieAdapter =
 //                new ArrayAdapter<String>(
 //                        getActivity(),
@@ -65,11 +74,11 @@ public class DiscoveryFragment extends Fragment {
     }
 
 
-    public class FetchMoviesTask extends AsyncTask<Void, Void, String[]> {
+    public class FetchMoviesTask extends AsyncTask<Void, Void, Void> {
 
         private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
-        private String[] getMovieDataFromJson(String movieJsonStr) throws JSONException {
+        private Void getMovieDataFromJson(String movieJsonStr) throws JSONException {
 //            final String TMDB_PAGE = "page";
             final String TMDB_RESULTS = "results";
             final String TMDB_TITLE = "title";
@@ -100,7 +109,21 @@ public class DiscoveryFragment extends Fragment {
                 vote_average = movieInfo.getString(TMDB_VOTE);
                 poster_path = movieInfo.getString(TMDB_POSTER);
 
-                new MovieData(backdrop_path, title, overview, release_date, poster_path, vote_average);
+
+                MovieData movieData = new MovieData(backdrop_path, title, overview, release_date, poster_path, vote_average);
+
+                movieList.add(movieData);
+
+//                if (MovieList != null) {
+//                    MovieList.add(new MovieData(backdrop_path, title, overview, release_date, poster_path, vote_average));
+//                    Log.d(LOG_TAG, "Movie List Item added");
+//                } else {
+//                    Log.d(LOG_TAG, "Movie List is null");
+//                    MovieList = new ArrayList<MovieData>();
+//                    MovieList.add(new MovieData(backdrop_path, title, overview, release_date, poster_path, vote_average));
+//                }
+
+
 //                resultStrs[i] = title + " - " + poster_path + " - " + overview;
 
                 resultStrs[i] = poster_path;
@@ -112,10 +135,11 @@ public class DiscoveryFragment extends Fragment {
             for (String s : resultStrs) {
                 Log.v(LOG_TAG, "Movie entry: " + s);
             }
-            return resultStrs;
+//            return movieList;
+            return null;
         }
         @Override
-        protected String[] doInBackground(Void... params) {
+        protected Void doInBackground(Void... params) {
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
             HttpURLConnection urlConnection = null;
@@ -187,6 +211,19 @@ public class DiscoveryFragment extends Fragment {
             }
             return null;
         }
+
+        @Override
+        protected void onPostExecute(Void params) {
+            mMovieAdapter.notifyDataSetChanged();
+        }
+//        @Override
+//        protected void onPostExecute(ArrayList<MovieData> movieDatas) {
+//            if (movieDatas != null) {
+//                mMovieAdapter.clear();
+//
+//                mMovieAdapter.addAll(movieDatas);
+//            }
+//        }
 
 
     }
