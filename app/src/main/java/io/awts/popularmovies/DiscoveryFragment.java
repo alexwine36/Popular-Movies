@@ -97,7 +97,7 @@ public class DiscoveryFragment extends Fragment {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
 //                scrollStateChanged = true;
-//               Integer scroller = scrollState;
+               Integer scroller = scrollState;
 //                Log.d(TAG, scroller.toString());
 
 
