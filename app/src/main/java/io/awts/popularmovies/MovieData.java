@@ -31,7 +31,7 @@ public class MovieData {
         Log.d(LOG_TAG + " Poster Path:", poster_path);
         this.vote_average = vAverage;
         Log.d(LOG_TAG + " Vote Average:", vote_average);
-        this.poster_url = getImageUrl(poster_path, "w185");
+        this.poster_url = getImageUrl(poster_path, "w342");
         Log.d(LOG_TAG + " Poster URL:", poster_url);
     }
 
