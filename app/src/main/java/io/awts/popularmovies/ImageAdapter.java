@@ -28,8 +28,8 @@ public class ImageAdapter extends ArrayAdapter<MovieData> {
 
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.grid_item_movie, parent, false);
-
         }
+
         ImageView movieView = (ImageView) convertView.findViewById(R.id.grid_item_poster);
         Picasso.with(getContext()).load(movieData.poster_url).into(movieView);
 

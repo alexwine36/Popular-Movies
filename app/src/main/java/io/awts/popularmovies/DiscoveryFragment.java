@@ -1,5 +1,7 @@
 package io.awts.popularmovies;
 
+import android.content.Context;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,8 +9,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,9 +32,17 @@ import java.util.ArrayList;
  */
 public class DiscoveryFragment extends Fragment {
 
+    private String TAG = DiscoveryFragment.class.getSimpleName();
+
     public ImageAdapter mMovieAdapter;
 
     private ArrayList<MovieData> movieList;
+
+    public Integer page_int;
+
+    public boolean scrollStateChanged;
+
+    Context context;
 
     public DiscoveryFragment() {
     }
@@ -39,21 +51,22 @@ public class DiscoveryFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        page_int = 1;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_discovery, container, false);
-        Button button = (Button) view.findViewById(R.id.trial_run);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FetchMoviesTask moviesTask = new FetchMoviesTask();
-                moviesTask.execute();
-                Log.d("Button Clicked", "Button was clicked");
-            }
-        });
+//        Button button = (Button) view.findViewById(R.id.trial_run);
+//        button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                FetchMoviesTask moviesTask = new FetchMoviesTask();
+//                moviesTask.execute();
+//                Log.d("Button Clicked", "Button was clicked");
+//            }
+//        });
 
         movieList = new ArrayList<MovieData>();
 
@@ -69,10 +82,70 @@ public class DiscoveryFragment extends Fragment {
 //                );
         GridView gridView = (GridView) view.findViewById(R.id.gridview);
         gridView.setAdapter(mMovieAdapter);
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String movie = mMovieAdapter.getItem(position).title;
+                Toast.makeText(getActivity(), movie, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+
+        gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+//                scrollStateChanged = true;
+//               Integer scroller = scrollState;
+//                Log.d(TAG, scroller.toString());
+
+
+
+                Log.d(TAG + " Scroll State:", scroller.toString());
+
+                if(scrollState == 0) {
+                    page_int++;
+                    updateMovies();
+                }
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+//                Integer updateThreshold = 1;
+//
+//
+//                if (totalItemCount != 0){
+//                    updateThreshold = totalItemCount - firstVisibleItem - visibleItemCount;
+//                }
+//
+//
+//
+//                if(updateThreshold == 0 && scrollStateChanged == true){
+//                    scrollStateChanged = false;
+//                    page_int++;
+//                    updateMovies();
+//                }
+//
+//                Log.d(TAG, updateThreshold.toString());
+            }
+        });
+
         return view;
 
     }
 
+    private void updateMovies() {
+        FetchMoviesTask moviesTask = new FetchMoviesTask();
+        moviesTask.execute();
+    }
+
+    public void onStart() {
+        super.onStart();
+        page_int = 1;
+        updateMovies();
+    }
 
     public class FetchMoviesTask extends AsyncTask<Void, Void, Void> {
 
@@ -132,9 +205,9 @@ public class DiscoveryFragment extends Fragment {
 
 //                JSONObject movieObject = movieInfo.getJSONObject()
             }
-            for (String s : resultStrs) {
-                Log.v(LOG_TAG, "Movie entry: " + s);
-            }
+//            for (String s : resultStrs) {
+//                Log.v(LOG_TAG, "Movie entry: " + s);
+//            }
 //            return movieList;
             return null;
         }
@@ -147,12 +220,31 @@ public class DiscoveryFragment extends Fragment {
 
             // Will contain the raw JSON response as a string.
             String moviesJsonStr = null;
+            String sort_by = "popularity.desc";
+            final String api_key = getString (R.string.API_Key);
+
 
             try {
+                String page = page_int.toString();
                 // Construct the URL for the OpenWeatherMap query
                 // Possible parameters are avaiable at OWM's forecast API page, at
                 // http://openweathermap.org/API#forecast
-                URL url = new URL("http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=a3f1e069bf84ca7645f1bc35724b4d05");
+
+                final String MOVIE_BASE_URL = "http://api.themoviedb.org/3/discover/movie";
+//                final String QUERY_PARAM = "?";
+                final String SORT_PARAM = "sort_by";
+                final String API_PARAM = "api_key";
+                final String PAGE_PARAM = "page";
+
+                Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon().appendQueryParameter(SORT_PARAM, sort_by).appendQueryParameter(PAGE_PARAM, page).appendQueryParameter(API_PARAM, api_key).build();
+
+//                URL url = new URL("http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=");
+
+                URL url = new URL(builtUri.toString());
+
+
+                Log.d(LOG_TAG, builtUri.toString());
+
 
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();

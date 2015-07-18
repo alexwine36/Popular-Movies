@@ -5,12 +5,12 @@
     android:layout_width="match_parent"
     android:orientation="vertical">
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="?android:attr/listPreferredItemHeight"
-        android:id="@+id/trial_run"
-        android:onClick="trialRun"
-        android:text="Trial Run" />
+    <!--<Button-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="?android:attr/listPreferredItemHeight"-->
+        <!--android:id="@+id/trial_run"-->
+        <!--android:onClick="trialRun"-->
+        <!--android:text="Trial Run" />-->
     <GridView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
