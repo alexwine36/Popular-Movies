@@ -1,6 +1,7 @@
 package io.awts.popularmovies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -38,9 +39,15 @@ public class DiscoveryFragment extends Fragment {
 
     private ArrayList<MovieData> movieList;
 
+//    ArrayList<MovieData> savedMovies;
+
     public Integer page_int;
 
     public boolean scrollStateChanged;
+
+    private static final String MOVIE_KEY = "movies";
+
+    private static final String PAGE_KEY = "page";
 
     Context context;
 
@@ -48,38 +55,37 @@ public class DiscoveryFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList(MOVIE_KEY, movieList);
+        outState.putInt(PAGE_KEY, page_int);
+        super.onSaveInstanceState(outState);
+    }
+
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-        page_int = 1;
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_discovery, container, false);
-//        Button button = (Button) view.findViewById(R.id.trial_run);
-//        button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                FetchMoviesTask moviesTask = new FetchMoviesTask();
-//                moviesTask.execute();
-//                Log.d("Button Clicked", "Button was clicked");
-//            }
-//        });
 
-        movieList = new ArrayList<MovieData>();
+        if (savedInstanceState == null || !savedInstanceState.containsKey(MOVIE_KEY) || !savedInstanceState.containsKey(PAGE_KEY)) {
+            movieList = new ArrayList<MovieData>();
+            page_int = 1;
+            updateMovies();
+        } else {
+            movieList = savedInstanceState.getParcelableArrayList(MOVIE_KEY);
+            page_int = savedInstanceState.getInt(PAGE_KEY);
+        }
+        setHasOptionsMenu(true);
+
 
         mMovieAdapter = new ImageAdapter(getActivity(), movieList);
 
-
-//        mMovieAdapter =
-//                new ArrayAdapter<String>(
-//                        getActivity(),
-//                        R.layout.fragment_discovery,
-//                        R.id.gridview,
-//                        new ArrayList<String>()
-//                );
         GridView gridView = (GridView) view.findViewById(R.id.gridview);
         gridView.setAdapter(mMovieAdapter);
 
@@ -87,24 +93,29 @@ public class DiscoveryFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String movie = mMovieAdapter.getItem(position).title;
+                String extra_movie = getString(R.string.extra_movie);
                 Toast.makeText(getActivity(), movie, Toast.LENGTH_SHORT).show();
+
+                MovieData movieData = mMovieAdapter.getItem(position);
+                Intent intent = new Intent(getActivity(), MovieDetails.class);
+                intent.putExtra(extra_movie, movieData);
+                startActivity(intent);
+//                intent.putExtra(MOVIE_KEY, MovieData.class);
             }
         });
-
 
 
         gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
 //                scrollStateChanged = true;
-               Integer scroller = scrollState;
+                Integer scroller = scrollState;
 //                Log.d(TAG, scroller.toString());
-
 
 
                 Log.d(TAG + " Scroll State:", scroller.toString());
 
-                if(scrollState == 0) {
+                if (scrollState == 0) {
                     page_int++;
                     updateMovies();
                 }
@@ -113,22 +124,7 @@ public class DiscoveryFragment extends Fragment {
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-//                Integer updateThreshold = 1;
-//
-//
-//                if (totalItemCount != 0){
-//                    updateThreshold = totalItemCount - firstVisibleItem - visibleItemCount;
-//                }
-//
-//
-//
-//                if(updateThreshold == 0 && scrollStateChanged == true){
-//                    scrollStateChanged = false;
-//                    page_int++;
-//                    updateMovies();
-//                }
-//
-//                Log.d(TAG, updateThreshold.toString());
+
             }
         });
 
@@ -136,16 +132,24 @@ public class DiscoveryFragment extends Fragment {
 
     }
 
+
     private void updateMovies() {
         FetchMoviesTask moviesTask = new FetchMoviesTask();
         moviesTask.execute();
     }
 
-    public void onStart() {
-        super.onStart();
-        page_int = 1;
-        updateMovies();
-    }
+//    public void onStart() {
+//        super.onStart();
+//        if (page_int == 1 && movieList != null) {
+//            updateMovies();
+//        }
+//        if (page_int == null) {
+//            page_int = 1;
+//            if (movieList == null) {
+//                updateMovies();
+//            }
+//        }
+//    }
 
     public class FetchMoviesTask extends AsyncTask<Void, Void, Void> {
 
@@ -211,6 +215,7 @@ public class DiscoveryFragment extends Fragment {
 //            return movieList;
             return null;
         }
+
         @Override
         protected Void doInBackground(Void... params) {
             // These two need to be declared outside the try/catch
@@ -221,7 +226,7 @@ public class DiscoveryFragment extends Fragment {
             // Will contain the raw JSON response as a string.
             String moviesJsonStr = null;
             String sort_by = "popularity.desc";
-            final String api_key = getString (R.string.API_Key);
+            final String api_key = getString(R.string.API_Key);
 
 
             try {
