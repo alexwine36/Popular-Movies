@@ -47,6 +47,24 @@
     <string name="pref_backdrop_size_default">w500</string>
 
 
+
+    <string name="pref_sort_key">pref_sort</string>
+    <string name="pref_sort_label">Preferred Sorting</string>
+    <string-array name="pref_sort_list_titles">
+        <item>Popularity</item>
+        <item>Highest Rated</item>
+        <item>Most Voted For</item>
+        <item>Highest Grossing</item>
+    </string-array>
+    <string-array name="pref_sort_list_values">
+        <item>popularity.desc</item>
+        <item>vote_average.desc</item>
+        <item>vote_count.desc</item>
+        <item>revenue.desc</item>
+    </string-array>
+    <string name="pref_sort_default">popularity.desc</string>
+
+
     <!--"w92", "w154", "w185", "w342", "w500", "w780", "original"-->
 
     <!-- Strings related to Settings -->

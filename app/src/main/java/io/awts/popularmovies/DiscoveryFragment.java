@@ -1,10 +1,11 @@
 package io.awts.popularmovies;
 
-import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,17 +40,17 @@ public class DiscoveryFragment extends Fragment {
 
     private ArrayList<MovieData> movieList;
 
-//    ArrayList<MovieData> savedMovies;
+    private String prefSort;
 
     public Integer page_int;
 
-    public boolean scrollStateChanged;
+
 
     private static final String MOVIE_KEY = "movies";
 
     private static final String PAGE_KEY = "page";
 
-    Context context;
+
 
     public DiscoveryFragment() {
     }
@@ -72,16 +73,30 @@ public class DiscoveryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_discovery, container, false);
+// TODO: Add a listener for settings change
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(view.getContext());
+
+        String sort_value = preferences.getString(getString(R.string.pref_sort_key), getString(R.string.pref_sort_default));
+
+//        prefSort = sort_value;
+//        if (sort_value != prefSort && prefSort != null) {
+//            prefSort = sort_value;
+//            updateMovies();
+//        }
+
 
         if (savedInstanceState == null || !savedInstanceState.containsKey(MOVIE_KEY) || !savedInstanceState.containsKey(PAGE_KEY)) {
             movieList = new ArrayList<MovieData>();
             page_int = 1;
+//            prefSort = sort_value;
             updateMovies();
         } else {
             movieList = savedInstanceState.getParcelableArrayList(MOVIE_KEY);
             page_int = savedInstanceState.getInt(PAGE_KEY);
         }
         setHasOptionsMenu(true);
+
 
 
         mMovieAdapter = new ImageAdapter(getActivity(), movieList);
@@ -224,8 +239,9 @@ public class DiscoveryFragment extends Fragment {
             BufferedReader reader = null;
 
             // Will contain the raw JSON response as a string.
+
             String moviesJsonStr = null;
-            String sort_by = "popularity.desc";
+//            String sort_by = prefSort;
             final String api_key = getString(R.string.API_Key);
 
 
@@ -241,7 +257,7 @@ public class DiscoveryFragment extends Fragment {
                 final String API_PARAM = "api_key";
                 final String PAGE_PARAM = "page";
 
-                Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon().appendQueryParameter(SORT_PARAM, sort_by).appendQueryParameter(PAGE_PARAM, page).appendQueryParameter(API_PARAM, api_key).build();
+                Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon().appendQueryParameter(SORT_PARAM, prefSort).appendQueryParameter(PAGE_PARAM, page).appendQueryParameter(API_PARAM, api_key).build();
 
 //                URL url = new URL("http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=");
 

@@ -33,6 +33,7 @@ public class SettingsActivity extends PreferenceActivity
         // TODO: Add preferences
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_poster_size_key)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_backdrop_size_key)));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_sort_key)));
     }
 
     /**
