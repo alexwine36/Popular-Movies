@@ -1,6 +1,8 @@
 package io.awts.popularmovies;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +20,14 @@ public class ImageAdapter extends ArrayAdapter<MovieData> {
 
     private static final String LOG_TAG = ImageAdapter.class.getSimpleName();
 
+    private String size;
+
+
     public ImageAdapter(Activity context, List<MovieData> movieData) {
         super(context, 0, movieData);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        size = preferences.getString(context.getString(R.string.pref_poster_size_key), context.getString(R.string.pref_poster_size_default));
+
     }
 
     @Override
@@ -30,8 +38,13 @@ public class ImageAdapter extends ArrayAdapter<MovieData> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.grid_item_movie, parent, false);
         }
 
+
+//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(convertView.getContext());
+//        String size =
+        String poster_url = MovieData.getImageUrl(movieData.poster_path, size);
+
         ImageView movieView = (ImageView) convertView.findViewById(R.id.grid_item_poster);
-        Picasso.with(getContext()).load(movieData.poster_url).into(movieView);
+        Picasso.with(getContext()).load(poster_url).into(movieView);
 
         return convertView;
     }

@@ -1,8 +1,10 @@
 package io.awts.popularmovies;
 
 import android.content.Intent;
-import android.support.v4.app.Fragment;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +20,11 @@ import com.squareup.picasso.Picasso;
 public class MovieDetailsFragment extends Fragment {
 
     private MovieData mMovie;
+
+
+
     public MovieDetailsFragment() {
+
     }
 
     @Override
@@ -26,7 +32,9 @@ public class MovieDetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_movie_details, container, false);
 
-
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(rootView.getContext());
+        String prefPosterSize = preferences.getString(getString(R.string.pref_poster_size_key), getString(R.string.pref_poster_size_default));
+        String prefBackdropSize = preferences.getString(getString(R.string.pref_backdrop_size_key), getString(R.string.pref_backdrop_size_default));
         Intent intent = getActivity().getIntent();
         String extra_movie = getString(R.string.extra_movie);
         if (intent != null && intent.hasExtra(extra_movie)){
@@ -42,11 +50,15 @@ public class MovieDetailsFragment extends Fragment {
             synopsisValue.setText(mMovie.overview);
             releaseValue.setText(mMovie.release_date);
             ratingValue.setText(mMovie.vote_average);
-            String imageSize = MovieData.sizes[3];
-            String biggerPicture = MovieData.getImageUrl(mMovie.poster_path, imageSize);
-            Picasso.with(rootView.getContext()).load(mMovie.backdrop_url).into(backgroundView);
+
+
+            String poster_url = MovieData.getImageUrl(mMovie.poster_path, prefPosterSize);
+
+            String backdrop_url = MovieData.getImageUrl(mMovie.backdrop_path, prefBackdropSize);
+
+            Picasso.with(rootView.getContext()).load(backdrop_url).into(backgroundView);
 //            Picasso.with(rootView.getContext()).load(mMovie.poster_url).into(posterView);
-            Picasso.with(rootView.getContext()).load(biggerPicture).into(posterView);
+            Picasso.with(rootView.getContext()).load(poster_url).into(posterView);
             Picasso.with(rootView.getContext()).load(MovieData.provider).into(tmdbView);
 
 

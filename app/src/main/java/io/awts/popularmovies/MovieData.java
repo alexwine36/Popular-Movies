@@ -41,26 +41,13 @@ public class MovieData implements Parcelable {
         Log.d(LOG_TAG + " Poster Path:", poster_path);
         this.vote_average = vAverage;
         Log.d(LOG_TAG + " Vote Average:", vote_average);
+
         this.poster_url = getImageUrl(poster_path, "w185");
         Log.d(LOG_TAG + " Poster URL:", poster_url);
         this.backdrop_url = getImageUrl(backdrop_path, "w780");
         Log.d(LOG_TAG + " Backdrop URL:", backdrop_url);
     }
 
-    public String[] getImageUrls(String path) {
-        int index = 0;
-
-        String[] urls = new String[sizes.length];
-        for (String size : sizes) {
-            urls[index] = getImageUrl(poster_path, size);
-            index++;
-        }
-
-        for (String url : urls) {
-            Log.d(LOG_TAG + " Image Array", url);
-        }
-        return urls;
-    }
     private MovieData(Parcel in) {
         backdrop_path = in.readString();
         title = in.readString();
