@@ -44,11 +44,15 @@ public class DiscoveryFragment extends Fragment {
 
     public Integer page_int;
 
+    private String sort_value;
 
+    private View view;
 
     private static final String MOVIE_KEY = "movies";
 
     private static final String PAGE_KEY = "page";
+
+    private static final String SORT_KEY = "sort";
 
 
 
@@ -59,6 +63,7 @@ public class DiscoveryFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(MOVIE_KEY, movieList);
         outState.putInt(PAGE_KEY, page_int);
+//        outState.putString(SORT_KEY, prefSort);
         super.onSaveInstanceState(outState);
     }
 
@@ -72,12 +77,12 @@ public class DiscoveryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_discovery, container, false);
+        view = inflater.inflate(R.layout.fragment_discovery, container, false);
 // TODO: Add a listener for settings change
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(view.getContext());
 
-        String sort_value = preferences.getString(getString(R.string.pref_sort_key), getString(R.string.pref_sort_default));
+        sort_value = preferences.getString(getString(R.string.pref_sort_key), getString(R.string.pref_sort_default));
 
 //        prefSort = sort_value;
 //        if (sort_value != prefSort && prefSort != null) {
@@ -86,12 +91,17 @@ public class DiscoveryFragment extends Fragment {
 //        }
 
 
+//        prefSort = sort_value;
+//        if (savedInstanceState == null || !savedInstanceState.containsKey(MOVIE_KEY) || !savedInstanceState.containsKey(PAGE_KEY) || sort_value != prefSort) {
         if (savedInstanceState == null || !savedInstanceState.containsKey(MOVIE_KEY) || !savedInstanceState.containsKey(PAGE_KEY)) {
             movieList = new ArrayList<MovieData>();
             page_int = 1;
-//            prefSort = sort_value;
+            prefSort = sort_value;
             updateMovies();
         } else {
+            if (prefSort != savedInstanceState.getString(SORT_KEY)){
+                Log.d(TAG + " PrefSort:", "pref sort instantiated: " + prefSort);
+            }
             movieList = savedInstanceState.getParcelableArrayList(MOVIE_KEY);
             page_int = savedInstanceState.getInt(PAGE_KEY);
         }
@@ -144,6 +154,24 @@ public class DiscoveryFragment extends Fragment {
         });
 
         return view;
+
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(view.getContext());
+        sort_value = preferences.getString(getString(R.string.pref_sort_key), getString(R.string.pref_sort_default));
+
+        if(sort_value != prefSort){
+            Log.d(TAG + " Sort:", prefSort + " - " + sort_value);
+            prefSort = sort_value;
+            movieList.clear();
+            page_int = 1;
+            updateMovies();
+
+        }
+
 
     }
 
