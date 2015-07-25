@@ -91,12 +91,12 @@ public class DiscoveryFragment extends Fragment {
 //        }
 
 
-//        prefSort = sort_value;
+        prefSort = sort_value;
 //        if (savedInstanceState == null || !savedInstanceState.containsKey(MOVIE_KEY) || !savedInstanceState.containsKey(PAGE_KEY) || sort_value != prefSort) {
         if (savedInstanceState == null || !savedInstanceState.containsKey(MOVIE_KEY) || !savedInstanceState.containsKey(PAGE_KEY)) {
             movieList = new ArrayList<MovieData>();
             page_int = 1;
-            prefSort = sort_value;
+//            prefSort = sort_value;
             updateMovies();
         } else {
             if (prefSort != savedInstanceState.getString(SORT_KEY)){
