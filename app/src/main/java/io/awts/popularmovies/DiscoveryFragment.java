@@ -99,9 +99,9 @@ public class DiscoveryFragment extends Fragment {
 //            prefSort = sort_value;
             updateMovies();
         } else {
-            if (prefSort != savedInstanceState.getString(SORT_KEY)){
-                Log.d(TAG + " PrefSort:", "pref sort instantiated: " + prefSort);
-            }
+//            if (prefSort != savedInstanceState.getString(SORT_KEY)){
+//                Log.d(TAG + " PrefSort:", "pref sort instantiated: " + prefSort);
+//            }
             movieList = savedInstanceState.getParcelableArrayList(MOVIE_KEY);
             page_int = savedInstanceState.getInt(PAGE_KEY);
         }
@@ -177,6 +177,8 @@ public class DiscoveryFragment extends Fragment {
 
 
     private void updateMovies() {
+        Toast.makeText(getActivity(), prefSort, Toast.LENGTH_SHORT).show();
+
         FetchMoviesTask moviesTask = new FetchMoviesTask();
         moviesTask.execute();
     }
@@ -357,14 +359,6 @@ public class DiscoveryFragment extends Fragment {
         protected void onPostExecute(Void params) {
             mMovieAdapter.notifyDataSetChanged();
         }
-//        @Override
-//        protected void onPostExecute(ArrayList<MovieData> movieDatas) {
-//            if (movieDatas != null) {
-//                mMovieAdapter.clear();
-//
-//                mMovieAdapter.addAll(movieDatas);
-//            }
-//        }
 
 
     }
