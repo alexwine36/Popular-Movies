@@ -25,10 +25,11 @@ public class MovieData implements Parcelable {
     String vote_average;
     String poster_url;
     String backdrop_url;
+    String id;
 
 
 
-    public MovieData(String bPath, String title, String overview, String rDate, String pPath, String vAverage) {
+    public MovieData(String bPath, String title, String overview, String rDate, String pPath, String vAverage, String id) {
         this.backdrop_path = bPath;
         Log.d(LOG_TAG + " Backdrop Path:", backdrop_path);
         this.title = title;
@@ -41,6 +42,9 @@ public class MovieData implements Parcelable {
         Log.d(LOG_TAG + " Poster Path:", poster_path);
         this.vote_average = vAverage;
         Log.d(LOG_TAG + " Vote Average:", vote_average);
+
+        this.id = id;
+        Log.d(LOG_TAG + " Movie ID:", id);
 
         this.poster_url = getImageUrl(poster_path, "w185");
         Log.d(LOG_TAG + " Poster URL:", poster_url);
@@ -55,6 +59,7 @@ public class MovieData implements Parcelable {
         release_date = in.readString();
         poster_path = in.readString();
         vote_average = in.readString();
+        id = in.readString();
         poster_url = in.readString();
         backdrop_url = in.readString();
     }
@@ -74,7 +79,7 @@ public class MovieData implements Parcelable {
 
     public String toString() {
         return backdrop_path + "--" + title + "--" + overview + "--" + release_date
-                + "--" + poster_path + "--" + vote_average + "--" + poster_url +
+                + "--" + poster_path + "--" + vote_average + "--" + id + "--" + poster_url +
                 "--" + backdrop_url;
     }
 
@@ -86,6 +91,7 @@ public class MovieData implements Parcelable {
         parcel.writeString(release_date);
         parcel.writeString(poster_path);
         parcel.writeString(vote_average);
+        parcel.writeString(id);
         parcel.writeString(poster_url);
         parcel.writeString(backdrop_url);
     }

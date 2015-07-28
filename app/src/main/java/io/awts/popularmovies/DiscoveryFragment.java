@@ -209,6 +209,7 @@ public class DiscoveryFragment extends Fragment {
             final String TMDB_BACKDROP = "backdrop_path";
             final String TMDB_RELEASE = "release_date";
             final String TMDB_VOTE = "vote_average";
+            final String TMDB_ID = "id";
 
             JSONObject movieJson = new JSONObject(movieJsonStr);
             JSONArray movieArray = movieJson.getJSONArray(TMDB_RESULTS);
@@ -221,6 +222,7 @@ public class DiscoveryFragment extends Fragment {
                 String release_date;
                 String poster_path;
                 String vote_average;
+                String id;
 
                 JSONObject movieInfo = movieArray.getJSONObject(i);
 
@@ -230,9 +232,10 @@ public class DiscoveryFragment extends Fragment {
                 release_date = movieInfo.getString(TMDB_RELEASE);
                 vote_average = movieInfo.getString(TMDB_VOTE);
                 poster_path = movieInfo.getString(TMDB_POSTER);
+                id = movieInfo.getString(TMDB_ID);
 
 
-                MovieData movieData = new MovieData(backdrop_path, title, overview, release_date, poster_path, vote_average);
+                MovieData movieData = new MovieData(backdrop_path, title, overview, release_date, poster_path, vote_average, id);
 
                 movieList.add(movieData);
 
