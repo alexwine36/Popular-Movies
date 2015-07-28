@@ -362,8 +362,6 @@ public class DiscoveryFragment extends Fragment {
         protected void onPostExecute(Void params) {
             mMovieAdapter.notifyDataSetChanged();
         }
-
-
     }
 
 }
