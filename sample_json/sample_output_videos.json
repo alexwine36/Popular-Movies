@@ -1,0 +1,41 @@
+{
+  "id": 49026,
+  "results": [
+    {
+      "id": "533ec6a9c3a36854480056a8",
+      "iso_639_1": "en",
+      "key": "z5Humz3ONgk",
+      "name": "Teaser",
+      "site": "YouTube",
+      "size": 1080,
+      "type": "Teaser"
+    },
+    {
+      "id": "533ec6a9c3a36854480056a9",
+      "iso_639_1": "en",
+      "key": "7gFwvozMHR4",
+      "name": "Trailer 2",
+      "site": "YouTube",
+      "size": 1080,
+      "type": "Trailer"
+    },
+    {
+      "id": "533ec6a9c3a36854480056aa",
+      "iso_639_1": "en",
+      "key": "g8evyE9TuYk",
+      "name": "Trailer 3",
+      "site": "YouTube",
+      "size": 1080,
+      "type": "Trailer"
+    },
+    {
+      "id": "533ec6a9c3a36854480056ab",
+      "iso_639_1": "en",
+      "key": "J9DlV9qwtF0",
+      "name": "Trailer 4",
+      "site": "YouTube",
+      "size": 1080,
+      "type": "Trailer"
+    }
+  ]
+}
