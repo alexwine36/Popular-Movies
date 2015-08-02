@@ -85,7 +85,7 @@ public class MovieDetailsFragment extends Fragment {
     public class FetchMovieDetailsTask extends AsyncTask<String, Void, Void> {
 
         private final String LOG_TAG = FetchMovieDetailsTask.class.getSimpleName();
-
+//TODO: Implement Retrofit to siplify Api calls
         private Void getMovieDetailsFromJson(String movieJsonStr) throws JSONException {
 //            final String TMDB_PAGE = "page";
             ArrayList<MovieReview> reviewArrayList = new ArrayList<MovieReview>();

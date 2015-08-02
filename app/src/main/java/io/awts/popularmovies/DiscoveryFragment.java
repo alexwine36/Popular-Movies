@@ -78,7 +78,7 @@ public class DiscoveryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_discovery, container, false);
-// TODO: Add a listener for settings change
+
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(view.getContext());
 
