@@ -1,20 +1,38 @@
 package io.awts.popularmovies;
 
+import android.app.Activity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
+
+import java.util.List;
+
+import io.awts.popularmovies.model.ReviewResult;
+
 /**
  * Created by alexanderwine on 8/3/15.
  */
-//public class ReviewAdapter extends ArrayAdapter<ReviewResult> {
-//    public ReviewAdapter (Activity context, ReviewResult reviewResult) {
-//        super(context, 0, reviewResult);
-//    }
-//    @Override
-//    public View getView(int position, View convertView, ViewGroup parent) {
-//        ReviewResult review_result = getItem(position);
-//        if (convertView == null) {
-//            convertView = La
-//        }
-//    }
+public class ReviewAdapter extends ArrayAdapter<ReviewResult> {
 
+    public ReviewAdapter(Activity context, List<ReviewResult> reviewResult) {
+        super(context, 0, reviewResult);
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        ReviewResult review_result = getItem(position);
+        if (convertView == null) {
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_review, parent, false);
+        }
+        TextView reviewAuthor = (TextView) convertView.findViewById(R.id.review_author);
+        reviewAuthor.setText(review_result.getAuthor());
+        TextView reviewContent = (TextView) convertView.findViewById(R.id.review_content);
+        reviewContent.setText(review_result.getContent());
+        return convertView;
+    }
+}
 
 //    private static final String LOG_TAG = ImageAdapter.class.getSimpleName();
 //

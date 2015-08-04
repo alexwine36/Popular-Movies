@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -25,14 +26,12 @@ import java.util.List;
 import io.awts.popularmovies.API.ApiClient;
 import io.awts.popularmovies.model.MovieApi;
 import io.awts.popularmovies.model.ReviewResult;
-import io.awts.popularmovies.model.VideoResult;
 import io.awts.popularmovies.model.Reviews;
+import io.awts.popularmovies.model.VideoResult;
 import io.awts.popularmovies.model.Videos;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-
-
 
 
 /**
@@ -42,6 +41,10 @@ public class MovieDetailsFragment extends Fragment {
 
     private final String LOG_TAG = FetchMovieDetailsTask.class.getSimpleName();
     private MovieData mMovie;
+
+    public ReviewAdapter mReviewAdapter;
+
+    public ArrayList<ReviewResult> reviewResultList;
 
 
     public MovieDetailsFragment() {
@@ -82,8 +85,27 @@ public class MovieDetailsFragment extends Fragment {
             Picasso.with(rootView.getContext()).load(poster_url).into(posterView);
             Picasso.with(rootView.getContext()).load(MovieData.provider).into(tmdbView);
 
+
             FetchMovieDetailsTask detailsTask = new FetchMovieDetailsTask();
-           detailsTask.execute(mMovie.id);
+            detailsTask.execute(mMovie.id);
+
+//            ArrayList<ReviewResult> reviewResultArrayList = reviewResultList.toArray(ReviewResult);
+
+            if (reviewResultList == null) {
+                reviewResultList = new ArrayList<ReviewResult>();
+            }
+
+
+
+            mReviewAdapter = new ReviewAdapter(getActivity(), reviewResultList);
+            ListView listView = (ListView) rootView.findViewById(R.id.list_review);
+            listView.setScrollContainer(false);
+
+            listView.setAdapter(mReviewAdapter);
+//                    mMovieAdapter = new ImageAdapter(getActivity(), movieList);
+//
+////            GridView gridView = (GridView) view.findViewById(R.id.gridview);
+////            gridView.setAdapter(mMovieAdapter);
 
 
         }
@@ -101,28 +123,38 @@ public class MovieDetailsFragment extends Fragment {
                 Log.d(LOG_TAG, "Success");
                 String homepage = movieDetailsApis.getHomepage();
                 Log.d(LOG_TAG, homepage);
-//                Iterator reviews = movieDetailsApis.getReviews().getReviewResults().iterator();
+//                Iterator reviews = movieDetailsApis.getReviews().getResults().iterator();
                 Reviews reviews = movieDetailsApis.getReviews();
                 Videos videos = movieDetailsApis.getVideos();
-                List<ReviewResult> review_result = reviews.getReviewResults();
+
+//                reviewResultList = reviews.getResults();
+
+
+                List<ReviewResult> reviewList = reviews.getResults();
+
+
+                mReviewAdapter.notifyDataSetChanged();
 
 //                if (videos != null) {
                 List<VideoResult> video_result = videos.getResults();
 
-                    for (VideoResult videoResult_ : video_result){
-                        String name = videoResult_.getName();
-                        String site = videoResult_.getSite();
-                        String key = videoResult_.getKey();
-                        Log.d(LOG_TAG + " " + name, "http://www." + site.toLowerCase() + ".com/watch?v=" + key);
-                    }
-
-//                }
-                for (ReviewResult reviewResult : review_result) {
+                for (ReviewResult reviewResult : reviewList) {
+                    reviewResultList.add(reviewResult);
                     String author = reviewResult.getAuthor();
                     String content = reviewResult.getContent();
-                    Log.d(LOG_TAG, author);
+                    Log.d(LOG_TAG + " Reviews:", author);
                     Log.d(LOG_TAG, content);
                 }
+
+                for (VideoResult videoResult_ : video_result) {
+                    String name = videoResult_.getName();
+                    String site = videoResult_.getSite();
+                    String key = videoResult_.getKey();
+                    Log.d(LOG_TAG + " " + name, "http://www." + site.toLowerCase() + ".com/watch?v=" + key);
+                }
+
+
+
 
             }
 
@@ -137,7 +169,7 @@ public class MovieDetailsFragment extends Fragment {
     public class FetchMovieDetailsTask extends AsyncTask<String, Void, Void> {
 
 
-//TODO: Implement Retrofit to siplify Api calls
+        //TODO: Implement Retrofit to siplify Api calls
         private Void getMovieDetailsFromJson(String movieJsonStr) throws JSONException {
 //            final String TMDB_PAGE = "page";
             ArrayList<MovieReview> reviewArrayList = new ArrayList<MovieReview>();
@@ -207,7 +239,7 @@ public class MovieDetailsFragment extends Fragment {
                 size = movieInfo.getString(TMDB_SIZE);
                 type = movieInfo.getString(TMDB_TYPE);
 
-                MovieVideo movieVideo = new MovieVideo(id,iso,key,name,site,size,type);
+                MovieVideo movieVideo = new MovieVideo(id, iso, key, name, site, size, type);
                 videoArrayList.add(movieVideo);
 
             }

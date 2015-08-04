@@ -12,7 +12,7 @@ public class Reviews {
     @Expose
     private Integer page;
     @Expose
-    private List<ReviewResult> reviewResults = new ArrayList<ReviewResult>();
+    private List<ReviewResult> results = new ArrayList<ReviewResult>();
     @SerializedName("total_pages")
     @Expose
     private Integer totalPages;
@@ -41,19 +41,19 @@ public class Reviews {
     /**
      *
      * @return
-     * The reviewResults
+     * The reviewResultList
      */
-    public List<ReviewResult> getReviewResults() {
-        return reviewResults;
+    public List<ReviewResult> getResults() {
+        return results;
     }
 
     /**
      *
-     * @param reviewResults
-     * The reviewResults
+     * @param results
+     * The reviewResultList
      */
-    public void setReviewResults(List<ReviewResult> reviewResults) {
-        this.reviewResults = reviewResults;
+    public void setResults(List<ReviewResult> results) {
+        this.results = results;
     }
 
     /**
