@@ -44,6 +44,8 @@ public class MovieDetailsFragment extends Fragment {
 
     public ReviewAdapter mReviewAdapter;
 
+    private TextView reviewHeader;
+
     public ArrayList<ReviewResult> reviewResultList;
 
 
@@ -96,10 +98,22 @@ public class MovieDetailsFragment extends Fragment {
             }
 
 
+//            LinearLayout reviewLayout = (LinearLayout) rootView.findViewById(R.id.review_layout);
+//
+//            TextView author = new TextView(rootView.getContext());
+//
+//            for (ReviewResult revRes : reviewResultList) {
+//                aurevRes.getAuthor();
+//            }
 
             mReviewAdapter = new ReviewAdapter(getActivity(), reviewResultList);
             ListView listView = (ListView) rootView.findViewById(R.id.list_review);
             listView.setScrollContainer(false);
+
+            reviewHeader = (TextView) rootView.findViewById(R.id.review_text);
+
+
+
 
             listView.setAdapter(mReviewAdapter);
 //                    mMovieAdapter = new ImageAdapter(getActivity(), movieList);
@@ -132,8 +146,12 @@ public class MovieDetailsFragment extends Fragment {
 
                 List<ReviewResult> reviewList = reviews.getResults();
 
+                if (reviewList.size() > 0) {
+                    reviewHeader.setVisibility(View.VISIBLE);
+                }
 
                 mReviewAdapter.notifyDataSetChanged();
+
 
 //                if (videos != null) {
                 List<VideoResult> video_result = videos.getResults();
