@@ -2,7 +2,6 @@ package io.awts.popularmovies;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -20,13 +19,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
+
+import io.awts.popularmovies.API.ApiClient;
+import io.awts.popularmovies.model.MovieApi;
+import io.awts.popularmovies.model.ReviewResult;
+import io.awts.popularmovies.model.VideoResult;
+import io.awts.popularmovies.model.Reviews;
+import io.awts.popularmovies.model.Videos;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+
+
 
 
 /**
@@ -34,6 +40,7 @@ import java.util.ArrayList;
  */
 public class MovieDetailsFragment extends Fragment {
 
+    private final String LOG_TAG = FetchMovieDetailsTask.class.getSimpleName();
     private MovieData mMovie;
 
 
@@ -76,15 +83,60 @@ public class MovieDetailsFragment extends Fragment {
             Picasso.with(rootView.getContext()).load(MovieData.provider).into(tmdbView);
 
             FetchMovieDetailsTask detailsTask = new FetchMovieDetailsTask();
-            detailsTask.execute(mMovie.id);
+           detailsTask.execute(mMovie.id);
+
 
         }
         return rootView;
     }
 
+
+    private void downloadData(String movie_id) {
+        String api_key = getString(R.string.API_Key);
+        String append_to_response = "videos,reviews";
+
+        ApiClient.getTmdbApiClient().getDetails(movie_id, api_key, append_to_response, new Callback<MovieApi>() {
+            @Override
+            public void success(MovieApi movieDetailsApis, Response response) {
+                Log.d(LOG_TAG, "Success");
+                String homepage = movieDetailsApis.getHomepage();
+                Log.d(LOG_TAG, homepage);
+//                Iterator reviews = movieDetailsApis.getReviews().getReviewResults().iterator();
+                Reviews reviews = movieDetailsApis.getReviews();
+                Videos videos = movieDetailsApis.getVideos();
+                List<ReviewResult> review_result = reviews.getReviewResults();
+
+//                if (videos != null) {
+                List<VideoResult> video_result = videos.getResults();
+
+                    for (VideoResult videoResult_ : video_result){
+                        String name = videoResult_.getName();
+                        String site = videoResult_.getSite();
+                        String key = videoResult_.getKey();
+                        Log.d(LOG_TAG + " " + name, "http://www." + site.toLowerCase() + ".com/watch?v=" + key);
+                    }
+
+//                }
+                for (ReviewResult reviewResult : review_result) {
+                    String author = reviewResult.getAuthor();
+                    String content = reviewResult.getContent();
+                    Log.d(LOG_TAG, author);
+                    Log.d(LOG_TAG, content);
+                }
+
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                error.printStackTrace();
+                Log.d(LOG_TAG, "Fail");
+            }
+        });
+    }
+
     public class FetchMovieDetailsTask extends AsyncTask<String, Void, Void> {
 
-        private final String LOG_TAG = FetchMovieDetailsTask.class.getSimpleName();
+
 //TODO: Implement Retrofit to siplify Api calls
         private Void getMovieDetailsFromJson(String movieJsonStr) throws JSONException {
 //            final String TMDB_PAGE = "page";
@@ -167,96 +219,102 @@ public class MovieDetailsFragment extends Fragment {
 
         @Override
         protected Void doInBackground(String... id_param) {
-            // These two need to be declared outside the try/catch
-            // so that they can be closed in the finally block.
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
 
-            // Will contain the raw JSON response as a string.
+            downloadData(id_param[0]);
 
-            String moviesJsonStr = null;
-//            String sort_by = prefSort;
-            final String api_key = getString(R.string.API_Key);
-            final String append_str = "reviews,videos";
-            String id = id_param[0];
-
-            try {
-//                String page = page_int.toString();
-
-
-                final String MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie";
-//                final String QUERY_PARAM = "?";
-//                final String SORT_PARAM = "sort_by";
-                final String API_PARAM = "api_key";
-//                final String PAGE_PARAM = "page";
-                final String APPEND_PARAM = "append_to_response";
-
-
-                Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon().appendEncodedPath(id).appendQueryParameter(API_PARAM, api_key).appendQueryParameter(APPEND_PARAM, append_str).build();
-
-//                URL url = new URL("http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=");
-
-                URL url = new URL(builtUri.toString());
-
-
-                Log.d(LOG_TAG, builtUri.toString());
-
-
-                // Create the request to OpenWeatherMap, and open the connection
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                // Read the input stream into a String
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    Log.d("InputStream", "Input Stream is null");
-                    return null;
-                }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
-                    buffer.append(line + "\n");
-
-                }
-
-                if (buffer.length() == 0) {
-                    // Stream was empty.  No point in parsing.
-                    return null;
-                }
-                moviesJsonStr = buffer.toString();
-
-                Log.d("JSON", moviesJsonStr);
-                try {
-                    getMovieDetailsFromJson(moviesJsonStr);
-                } catch (JSONException e) {
-                    Log.e(LOG_TAG, e.getMessage(), e);
-                    e.printStackTrace();
-                }
-
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
-                // to parse it.
-                return null;
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e(LOG_TAG, "Error closing stream", e);
-                    }
-                }
-            }
+//            // These two need to be declared outside the try/catch
+//            // so that they can be closed in the finally block.
+//            HttpURLConnection urlConnection = null;
+//            BufferedReader reader = null;
+//
+//            // Will contain the raw JSON response as a string.
+//
+//            String moviesJsonStr = null;
+////            String sort_by = prefSort;
+//            final String api_key = getString(R.string.API_Key);
+//            final String append_str = "reviews,videos";
+//            String id = id_param[0];
+//
+//
+//
+//
+//            try {
+////                String page = page_int.toString();
+//
+//
+//                final String MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie";
+////                final String QUERY_PARAM = "?";
+////                final String SORT_PARAM = "sort_by";
+//                final String API_PARAM = "api_key";
+////                final String PAGE_PARAM = "page";
+//                final String APPEND_PARAM = "append_to_response";
+//
+//
+//                Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon().appendEncodedPath(id).appendQueryParameter(API_PARAM, api_key).appendQueryParameter(APPEND_PARAM, append_str).build();
+//
+////                URL url = new URL("http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=");
+//
+//                URL url = new URL(builtUri.toString());
+//
+//
+//                Log.d(LOG_TAG, builtUri.toString());
+//
+//
+//                // Create the request to OpenWeatherMap, and open the connection
+//                urlConnection = (HttpURLConnection) url.openConnection();
+//                urlConnection.setRequestMethod("GET");
+//                urlConnection.connect();
+//
+//                // Read the input stream into a String
+//                InputStream inputStream = urlConnection.getInputStream();
+//                StringBuffer buffer = new StringBuffer();
+//                if (inputStream == null) {
+//                    // Nothing to do.
+//                    Log.d("InputStream", "Input Stream is null");
+//                    return null;
+//                }
+//                reader = new BufferedReader(new InputStreamReader(inputStream));
+//
+//                String line;
+//                while ((line = reader.readLine()) != null) {
+//                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+//                    // But it does make debugging a *lot* easier if you print out the completed
+//                    // buffer for debugging.
+//                    buffer.append(line + "\n");
+//
+//                }
+//
+//                if (buffer.length() == 0) {
+//                    // Stream was empty.  No point in parsing.
+//                    return null;
+//                }
+//                moviesJsonStr = buffer.toString();
+//
+//                Log.d("JSON", moviesJsonStr);
+//                try {
+//                    getMovieDetailsFromJson(moviesJsonStr);
+//                } catch (JSONException e) {
+//                    Log.e(LOG_TAG, e.getMessage(), e);
+//                    e.printStackTrace();
+//                }
+//
+//            } catch (IOException e) {
+//                Log.e(LOG_TAG, "Error ", e);
+//                // If the code didn't successfully get the weather data, there's no point in attemping
+//                // to parse it.
+//                return null;
+//            } finally {
+//                if (urlConnection != null) {
+//                    urlConnection.disconnect();
+//                }
+//                if (reader != null) {
+//                    try {
+//                        reader.close();
+//                    } catch (final IOException e) {
+//                        Log.e(LOG_TAG, "Error closing stream", e);
+//                    }
+//                }
+//            }
             return null;
         }
 
