@@ -15,10 +15,6 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -235,44 +231,44 @@ public class DiscoveryFragment extends Fragment {
 
         private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
-        private Void getMovieDataFromJson(String movieJsonStr) throws JSONException {
-//            final String TMDB_PAGE = "page";
-            final String TMDB_RESULTS = "results";
-            final String TMDB_TITLE = "title";
-            final String TMDB_OVERVIEW = "overview";
-            final String TMDB_POSTER = "poster_path";
-            final String TMDB_BACKDROP = "backdrop_path";
-            final String TMDB_RELEASE = "release_date";
-            final String TMDB_VOTE = "vote_average";
-            final String TMDB_ID = "id";
-
-            JSONObject movieJson = new JSONObject(movieJsonStr);
-            JSONArray movieArray = movieJson.getJSONArray(TMDB_RESULTS);
-
-            String[] resultStrs = new String[movieArray.length()];
-            for (int i = 0; i < movieArray.length(); i++) {
-                String backdrop_path;
-                String title;
-                String overview;
-                String release_date;
-                String poster_path;
-                String vote_average;
-                String id;
-
-                JSONObject movieInfo = movieArray.getJSONObject(i);
-
-                title = movieInfo.getString(TMDB_TITLE);
-                overview = movieInfo.getString(TMDB_OVERVIEW);
-                backdrop_path = movieInfo.getString(TMDB_BACKDROP);
-                release_date = movieInfo.getString(TMDB_RELEASE);
-                vote_average = movieInfo.getString(TMDB_VOTE);
-                poster_path = movieInfo.getString(TMDB_POSTER);
-                id = movieInfo.getString(TMDB_ID);
-
-
-                MovieData movieData = new MovieData(backdrop_path, title, overview, release_date, poster_path, vote_average, id);
-
-                movieList.add(movieData);
+//        private Void getMovieDataFromJson(String movieJsonStr) throws JSONException {
+////            final String TMDB_PAGE = "page";
+//            final String TMDB_RESULTS = "results";
+//            final String TMDB_TITLE = "title";
+//            final String TMDB_OVERVIEW = "overview";
+//            final String TMDB_POSTER = "poster_path";
+//            final String TMDB_BACKDROP = "backdrop_path";
+//            final String TMDB_RELEASE = "release_date";
+//            final String TMDB_VOTE = "vote_average";
+//            final String TMDB_ID = "id";
+//
+//            JSONObject movieJson = new JSONObject(movieJsonStr);
+//            JSONArray movieArray = movieJson.getJSONArray(TMDB_RESULTS);
+//
+//            String[] resultStrs = new String[movieArray.length()];
+//            for (int i = 0; i < movieArray.length(); i++) {
+//                String backdrop_path;
+//                String title;
+//                String overview;
+//                String release_date;
+//                String poster_path;
+//                String vote_average;
+//                String id;
+//
+//                JSONObject movieInfo = movieArray.getJSONObject(i);
+//
+//                title = movieInfo.getString(TMDB_TITLE);
+//                overview = movieInfo.getString(TMDB_OVERVIEW);
+//                backdrop_path = movieInfo.getString(TMDB_BACKDROP);
+//                release_date = movieInfo.getString(TMDB_RELEASE);
+//                vote_average = movieInfo.getString(TMDB_VOTE);
+//                poster_path = movieInfo.getString(TMDB_POSTER);
+//                id = movieInfo.getString(TMDB_ID);
+//
+//
+//                MovieData movieData = new MovieData(backdrop_path, title, overview, release_date, poster_path, vote_average, id);
+//
+//                movieList.add(movieData);
 
 //                if (MovieList != null) {
 //                    MovieList.add(new MovieData(backdrop_path, title, overview, release_date, poster_path, vote_average));
@@ -286,22 +282,22 @@ public class DiscoveryFragment extends Fragment {
 
 //                resultStrs[i] = title + " - " + poster_path + " - " + overview;
 
-                resultStrs[i] = poster_path;
+//                resultStrs[i] = poster_path;
 
 //                Log.v(LOG_TAG, title + " - " + poster_path + " - " + overview);
 
 //                JSONObject movieObject = movieInfo.getJSONObject()
-            }
+//            }
 //            for (String s : resultStrs) {
 //                Log.v(LOG_TAG, "Movie entry: " + s);
 //            }
 //            return movieList;
-            return null;
-        }
+//            return null;
+//        }
 
         @Override
         protected Void doInBackground(Void... params) {
-
+//TODO: Handle void information instances
             downloadData();
 
 //            // These two need to be declared outside the try/catch
