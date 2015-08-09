@@ -23,12 +23,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.awts.popularmovies.API.ApiClient;
-import io.awts.popularmovies.model.MovieApi;
-import io.awts.popularmovies.model.ReviewResult;
-import io.awts.popularmovies.model.Reviews;
-import io.awts.popularmovies.model.VideoResult;
-import io.awts.popularmovies.model.Videos;
+import io.awts.popularmovies.API.MovieDataApiClient;
+import io.awts.popularmovies.adapter.ReviewAdapter;
+import io.awts.popularmovies.model.details.MovieApi;
+import io.awts.popularmovies.model.details.ReviewResult;
+import io.awts.popularmovies.model.details.Reviews;
+import io.awts.popularmovies.model.details.VideoResult;
+import io.awts.popularmovies.model.details.Videos;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -131,7 +132,7 @@ public class MovieDetailsFragment extends Fragment {
         String api_key = getString(R.string.API_Key);
         String append_to_response = "videos,reviews";
 
-        ApiClient.getTmdbApiClient().getDetails(movie_id, api_key, append_to_response, new Callback<MovieApi>() {
+        MovieDataApiClient.getTmdbApiClient().getDetails(movie_id, api_key, append_to_response, new Callback<MovieApi>() {
             @Override
             public void success(MovieApi movieDetailsApis, Response response) {
                 Log.d(LOG_TAG, "Success");

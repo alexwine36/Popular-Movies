@@ -1,4 +1,4 @@
-package io.awts.popularmovies;
+package io.awts.popularmovies.adapter;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
@@ -9,7 +9,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import io.awts.popularmovies.model.ReviewResult;
+import io.awts.popularmovies.R;
+import io.awts.popularmovies.model.details.ReviewResult;
 
 /**
  * Created by alexanderwine on 8/3/15.

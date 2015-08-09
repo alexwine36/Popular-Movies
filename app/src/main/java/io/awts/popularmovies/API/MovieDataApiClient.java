@@ -1,6 +1,6 @@
 package io.awts.popularmovies.API;
 
-import io.awts.popularmovies.model.MovieApi;
+import io.awts.popularmovies.model.details.MovieApi;
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.http.GET;
@@ -10,7 +10,7 @@ import retrofit.http.Query;
 /**
  * Created by alexanderwine on 8/2/15.
  */
-public class ApiClient {
+public class MovieDataApiClient {
     private static TmdbApiInterface apiInterface;
 
     public static TmdbApiInterface getTmdbApiClient() {

@@ -1,4 +1,4 @@
-package io.awts.popularmovies.model;
+package io.awts.popularmovies.model.details;
 
 import com.google.gson.annotations.Expose;
 
