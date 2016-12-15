@@ -5,7 +5,9 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,14 +18,11 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import io.awts.popularmovies.API.MovieDataApiClient;
+import io.awts.popularmovies.adapter.RecyclerReviewAdapter;
 import io.awts.popularmovies.adapter.ReviewAdapter;
 import io.awts.popularmovies.model.details.MovieApi;
 import io.awts.popularmovies.model.details.ReviewResult;
@@ -45,6 +44,8 @@ public class MovieDetailsFragment extends Fragment {
 
     public ReviewAdapter mReviewAdapter;
 
+    public RecyclerReviewAdapter reviewAdapter;
+
     private TextView reviewHeader;
 
     public ArrayList<ReviewResult> reviewResultList;
@@ -54,10 +55,18 @@ public class MovieDetailsFragment extends Fragment {
 
     }
 
+    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_movie_details, container, false);
+//        if (reviewResultList == null) {
+//            reviewResultList = new ArrayList<ReviewResult>();
+//        }
+//        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
+//        reviewAdapter = new RecyclerReviewAdapter(getActivity(), reviewResultList);
+//        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
+//        recyclerView.setAdapter(reviewAdapter);
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(rootView.getContext());
         String prefPosterSize = preferences.getString(getString(R.string.pref_poster_size_key), getString(R.string.pref_poster_size_default));
@@ -94,9 +103,7 @@ public class MovieDetailsFragment extends Fragment {
 
 //            ArrayList<ReviewResult> reviewResultArrayList = reviewResultList.toArray(ReviewResult);
 
-            if (reviewResultList == null) {
-                reviewResultList = new ArrayList<ReviewResult>();
-            }
+
 
 
 //            LinearLayout reviewLayout = (LinearLayout) rootView.findViewById(R.id.review_layout);
@@ -107,15 +114,19 @@ public class MovieDetailsFragment extends Fragment {
 //                aurevRes.getAuthor();
 //            }
 
+            if(reviewResultList == null){
+                reviewResultList = new ArrayList<ReviewResult>();
+            }
+
+
+
             mReviewAdapter = new ReviewAdapter(getActivity(), reviewResultList);
             ListView listView = (ListView) rootView.findViewById(R.id.list_review);
-            listView.setScrollContainer(false);
-
+//            listView.setScrollContainer(false);
+//
             reviewHeader = (TextView) rootView.findViewById(R.id.review_text);
-
-
-
-
+//
+//
             listView.setAdapter(mReviewAdapter);
 //                    mMovieAdapter = new ImageAdapter(getActivity(), movieList);
 //
@@ -124,154 +135,171 @@ public class MovieDetailsFragment extends Fragment {
 
 
         }
+
+
+
+//        recyclerView.getAdapter().getItemCount();
+
+//        setupRecyclerView(recyclerView);
         return rootView;
     }
 
+    private void setupRecyclerView(RecyclerView recyclerView) {
 
-    private void downloadData(String movie_id) {
-        String api_key = getString(R.string.API_Key);
-        String append_to_response = "videos,reviews";
+//        return recyclerView;
+    }
 
-        MovieDataApiClient.getTmdbApiClient().getDetails(movie_id, api_key, append_to_response, new Callback<MovieApi>() {
-            @Override
-            public void success(MovieApi movieDetailsApis, Response response) {
-                Log.d(LOG_TAG, "Success");
-                String homepage = movieDetailsApis.getHomepage();
-                Log.d(LOG_TAG, homepage);
+
+
+
+    public class FetchMovieDetailsTask extends AsyncTask<String, Void, Void> {
+
+        private void downloadData(String movie_id) {
+            String api_key = getString(R.string.API_Key);
+            String append_to_response = "videos,reviews";
+
+            MovieDataApiClient.getTmdbApiClient().getDetails(movie_id, api_key, append_to_response, new Callback<MovieApi>() {
+                @Override
+                public void success(MovieApi movieDetailsApis, Response response) {
+                    Log.d(LOG_TAG, "Success");
+                    String homepage = movieDetailsApis.getHomepage();
+                    Log.d(LOG_TAG, homepage);
 //                Iterator reviews = movieDetailsApis.getReviews().getResults().iterator();
-                Reviews reviews = movieDetailsApis.getReviews();
-                Videos videos = movieDetailsApis.getVideos();
+                    Reviews reviews = movieDetailsApis.getReviews();
+                    Videos videos = movieDetailsApis.getVideos();
 
 //                reviewResultList = reviews.getResults();
 
 
-                List<ReviewResult> reviewList = reviews.getResults();
+                    List<ReviewResult> reviewList = reviews.getResults();
 
-                if (reviewList.size() > 0) {
-                    reviewHeader.setVisibility(View.VISIBLE);
-                }
+                    if (reviewList.size() > 0) {
+                        reviewHeader.setVisibility(View.VISIBLE);
+                    }
 
-                mReviewAdapter.notifyDataSetChanged();
+//                mReviewAdapter.notifyDataSetChanged();
+
 
 
 //                if (videos != null) {
-                List<VideoResult> video_result = videos.getResults();
+                    List<VideoResult> video_result = videos.getResults();
 
-                for (ReviewResult reviewResult : reviewList) {
-                    reviewResultList.add(reviewResult);
-                    String author = reviewResult.getAuthor();
-                    String content = reviewResult.getContent();
-                    Log.d(LOG_TAG + " Reviews:", author);
-                    Log.d(LOG_TAG, content);
+                    for (ReviewResult reviewResult : reviewList) {
+                        reviewResultList.add(reviewResult);
+
+                        String author = reviewResult.getAuthor();
+                        String content = reviewResult.getContent();
+                        Log.d(LOG_TAG + " Reviews:", author);
+                        Log.d(LOG_TAG, content);
+//                        reviewAdapter.notify();
+                    }
+
+                    mReviewAdapter.notifyDataSetChanged();
+
+
+                    for (VideoResult videoResult_ : video_result) {
+                        String name = videoResult_.getName();
+                        String site = videoResult_.getSite();
+                        String key = videoResult_.getKey();
+                        Log.d(LOG_TAG + " " + name, "http://www." + site.toLowerCase() + ".com/watch?v=" + key);
+                    }
+//                reviewAdapter.notifyDataSetChanged();
+
                 }
 
-                for (VideoResult videoResult_ : video_result) {
-                    String name = videoResult_.getName();
-                    String site = videoResult_.getSite();
-                    String key = videoResult_.getKey();
-                    Log.d(LOG_TAG + " " + name, "http://www." + site.toLowerCase() + ".com/watch?v=" + key);
+                @Override
+                public void failure(RetrofitError error) {
+                    error.printStackTrace();
+                    Log.d(LOG_TAG, "Fail");
                 }
-
-
-
-
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                error.printStackTrace();
-                Log.d(LOG_TAG, "Fail");
-            }
-        });
-    }
-
-    public class FetchMovieDetailsTask extends AsyncTask<String, Void, Void> {
-
-
-        //TODO: Implement Retrofit to siplify Api calls
-        private Void getMovieDetailsFromJson(String movieJsonStr) throws JSONException {
-//            final String TMDB_PAGE = "page";
-            ArrayList<MovieReview> reviewArrayList = new ArrayList<MovieReview>();
-            ArrayList<MovieVideo> videoArrayList = new ArrayList<MovieVideo>();
-            final String TMDB_REVIEWS = "reviews";
-            final String TMDB_VIDEOS = "videos";
-            final String TMDB_RESULTS = "results";
-            final String TMDB_AUTHOR = "author";
-            final String TMDB_CONTENT = "content";
-            final String TMDB_URL = "url";
-            final String TMDB_ID = "id";
-            final String TMDB_ISO = "iso_639_1";
-            final String TMDB_KEY = "key";
-            final String TMDB_NAME = "name";
-            final String TMDB_SITE = "site";
-            final String TMDB_SIZE = "size";
-            final String TMDB_TYPE = "type";
-
-            JSONObject movieJson = new JSONObject(movieJsonStr);
-            JSONObject videos = movieJson.getJSONObject(TMDB_VIDEOS);
-            JSONObject reviews = movieJson.getJSONObject(TMDB_REVIEWS);
-            JSONArray movieVideos = videos.getJSONArray(TMDB_RESULTS);
-            JSONArray movieReviews = reviews.getJSONArray(TMDB_RESULTS);
-
-            String[] resultStrs = new String[movieReviews.length()];
-            Integer reviewCount = movieReviews.length();
-            Log.d(LOG_TAG + " Reviews Count:", reviewCount.toString());
-            for (int i = 0; i < movieReviews.length(); i++) {
-                String id;
-                String url;
-                String content;
-                String author;
-
-
-                JSONObject movieInfo = movieReviews.getJSONObject(i);
-
-                author = movieInfo.getString(TMDB_AUTHOR);
-                content = movieInfo.getString(TMDB_CONTENT);
-                url = movieInfo.getString(TMDB_URL);
-                id = movieInfo.getString(TMDB_ID);
-
-
-                MovieReview movieReview = new MovieReview(id, author, content, url);
-                reviewArrayList.add(movieReview);
-
-                resultStrs[i] = author + " - " + content + " - " + url + " - " + id;
-            }
-            Integer videoCount = movieVideos.length();
-            Log.d(LOG_TAG + " Videos Count:", videoCount.toString());
-            for (int i = 0; i < videoCount; i++) {
-                String id;
-                String iso;
-                String key;
-                String name;
-                String site;
-                String size;
-                String type;
-
-
-                JSONObject movieInfo = movieVideos.getJSONObject(i);
-
-                id = movieInfo.getString(TMDB_ID);
-                iso = movieInfo.getString(TMDB_ISO);
-                key = movieInfo.getString(TMDB_KEY);
-                name = movieInfo.getString(TMDB_NAME);
-                site = movieInfo.getString(TMDB_SITE);
-                size = movieInfo.getString(TMDB_SIZE);
-                type = movieInfo.getString(TMDB_TYPE);
-
-                MovieVideo movieVideo = new MovieVideo(id, iso, key, name, site, size, type);
-                videoArrayList.add(movieVideo);
-
-            }
-//            for (String s : resultStrs) {
-//                Log.d(LOG_TAG, "Movie entry: " + s);
-//            }
-            return null;
+            });
         }
+        //TODO: Implement Retrofit to siplify Api calls
+//        private Void getMovieDetailsFromJson(String movieJsonStr) throws JSONException {
+////            final String TMDB_PAGE = "page";
+//            ArrayList<MovieReview> reviewArrayList = new ArrayList<MovieReview>();
+//            ArrayList<MovieVideo> videoArrayList = new ArrayList<MovieVideo>();
+//            final String TMDB_REVIEWS = "reviews";
+//            final String TMDB_VIDEOS = "videos";
+//            final String TMDB_RESULTS = "results";
+//            final String TMDB_AUTHOR = "author";
+//            final String TMDB_CONTENT = "content";
+//            final String TMDB_URL = "url";
+//            final String TMDB_ID = "id";
+//            final String TMDB_ISO = "iso_639_1";
+//            final String TMDB_KEY = "key";
+//            final String TMDB_NAME = "name";
+//            final String TMDB_SITE = "site";
+//            final String TMDB_SIZE = "size";
+//            final String TMDB_TYPE = "type";
+//
+//            JSONObject movieJson = new JSONObject(movieJsonStr);
+//            JSONObject videos = movieJson.getJSONObject(TMDB_VIDEOS);
+//            JSONObject reviews = movieJson.getJSONObject(TMDB_REVIEWS);
+//            JSONArray movieVideos = videos.getJSONArray(TMDB_RESULTS);
+//            JSONArray movieReviews = reviews.getJSONArray(TMDB_RESULTS);
+//
+//            String[] resultStrs = new String[movieReviews.length()];
+//            Integer reviewCount = movieReviews.length();
+//            Log.d(LOG_TAG + " Reviews Count:", reviewCount.toString());
+//            for (int i = 0; i < movieReviews.length(); i++) {
+//                String id;
+//                String url;
+//                String content;
+//                String author;
+//
+//
+//                JSONObject movieInfo = movieReviews.getJSONObject(i);
+//
+//                author = movieInfo.getString(TMDB_AUTHOR);
+//                content = movieInfo.getString(TMDB_CONTENT);
+//                url = movieInfo.getString(TMDB_URL);
+//                id = movieInfo.getString(TMDB_ID);
+//
+//
+//                MovieReview movieReview = new MovieReview(id, author, content, url);
+//                reviewArrayList.add(movieReview);
+//
+//                resultStrs[i] = author + " - " + content + " - " + url + " - " + id;
+//            }
+//            Integer videoCount = movieVideos.length();
+//            Log.d(LOG_TAG + " Videos Count:", videoCount.toString());
+//            for (int i = 0; i < videoCount; i++) {
+//                String id;
+//                String iso;
+//                String key;
+//                String name;
+//                String site;
+//                String size;
+//                String type;
+//
+//
+//                JSONObject movieInfo = movieVideos.getJSONObject(i);
+//
+//                id = movieInfo.getString(TMDB_ID);
+//                iso = movieInfo.getString(TMDB_ISO);
+//                key = movieInfo.getString(TMDB_KEY);
+//                name = movieInfo.getString(TMDB_NAME);
+//                site = movieInfo.getString(TMDB_SITE);
+//                size = movieInfo.getString(TMDB_SIZE);
+//                type = movieInfo.getString(TMDB_TYPE);
+//
+//                MovieVideo movieVideo = new MovieVideo(id, iso, key, name, site, size, type);
+//                videoArrayList.add(movieVideo);
+//
+//            }
+////            for (String s : resultStrs) {
+////                Log.d(LOG_TAG, "Movie entry: " + s);
+////            }
+//            return null;
+//        }
 
         @Override
         protected Void doInBackground(String... id_param) {
 
             downloadData(id_param[0]);
+            mReviewAdapter.notifyDataSetChanged();
+//            reviewAdapter.notifyDataSetChanged();
 
 //            // These two need to be declared outside the try/catch
 //            // so that they can be closed in the finally block.
@@ -369,9 +397,33 @@ public class MovieDetailsFragment extends Fragment {
             return null;
         }
 
-//        @Override
-//        protected void onPostExecute(Void params) {
-//            mMovieAdapter.notifyDataSetChanged();
+        @Override
+        protected void onPostExecute(Void params) {
+            mReviewAdapter.notifyDataSetChanged();
+
+
+//            reviewAdapter.getItemCount();
+//            Integer reviewAdapterCount = reviewAdapter.getItemCount();
+//            Log.d(LOG_TAG + " REVIEW ADAPTER CHECK:", reviewAdapterCount.toString());
+//
+//
+////            if (reviewAdapterCount > 0) {
+//                try {
+//                    if (reviewAdapterCount > 0){
+//                        Log.d(LOG_TAG + " Review Adapter String:", reviewAdapter.getValueAt(0).getAuthor());
+//
+//                        reviewAdapter.notifyDataSetChanged();
+//                    } else {
+//                        FetchMovieDetailsTask movieDetailsTask = new FetchMovieDetailsTask();
+//                        movieDetailsTask.execute(mMovie.id);
+//                    }
+//
+//                } catch (NullPointerException e){
+//                    e.printStackTrace();
+//                }
+
+            }
+
 //        }
     }
 

@@ -169,6 +169,7 @@ public class DiscoveryFragment extends Fragment {
 
 
     }
+
     private void downloadData() {
         String api_key = getString(R.string.API_Key);
 //        String append_to_response = "videos,reviews";

@@ -47,9 +47,8 @@
 
                     <TextView
                         android:id="@+id/hello_text"
-                        style="@style/TextAppearance.AppCompat.Display2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        style="@style/LargeText"
+
                         android:layout_gravity="bottom|right"
                         android:gravity="bottom|right"
                         android:lines="@integer/abc_max_action_buttons"
@@ -59,15 +58,13 @@
 
                 <TextView
                     android:id="@+id/release_title"
-                    style="@style/TextAppearance.AppCompat.Display1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/LargeText"
                     android:layout_gravity="right"
                     android:text="@string/release_date" />
 
                 <TextView
                     android:id="@+id/release_value"
-                    style="@style/TextAppearance.AppCompat.Display1"
+                    style="@style/LargeText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end" />
@@ -80,7 +77,7 @@
 
                     <TextView
                         android:id="@+id/rating_title"
-                        style="@style/TextAppearance.AppCompat.Display1"
+                        style="@style/LargeText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingEnd="10dp"
@@ -90,11 +87,7 @@
 
                     <TextView
                         android:id="@+id/rating_value"
-                        style="@style/TextAppearance.AppCompat.Display1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-
-                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                        style="@style/LargeText" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -111,14 +104,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/synopsis"
-                android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+                style="@style/LargeText"/>
 
             <TextView
                 android:id="@+id/sysnopsis_value"
                 android:layout_width="wrap_content"
 
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+                style="@style/MediumText"/>
         </LinearLayout>
 
         <TextView
@@ -126,20 +119,22 @@
             android:layout_height="wrap_content"
             android:text="Reviews:"
             android:visibility="gone"
-            android:textAppearance="?android:attr/textAppearanceLarge"
+            style="@style/LargeText"
             android:padding="15dp"
             android:id="@+id/review_text"/>
 
         <ListView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/list_review"
-            android:padding="15dp" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/list_review"
+        android:padding="15dp" />
 
-
-
-
-
+        <!--<android.support.v7.widget.RecyclerView-->
+            <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+            <!--android:id="@+id/recyclerview"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--/>-->
 
 
 
